@@ -1,18 +1,16 @@
 from os.path import dirname, join, realpath
-from enum import Enum
+
 from typing import Tuple
 import pandas as pd
 
-county_dict = {
-    1286.: 'Ventura',
-    2061.: 'Orange',
-    3101.: 'Los Angeles'
-}
+from Zillow.types import County, Features
 
-class County(Enum):
-    VENTURA = 1286
-    ORANGE = 2061
-    LOS_ANGELES = 3101
+
+county_dict = {
+    County.VENTURA.value: 'Ventura',
+    County.ORANGE.value: 'Orange',
+    County.LOS_ANGELES.value: 'Los Angeles'
+}
 
 property_land_use_type = {
     31 : 'Commercial/Office/Residential mix',
@@ -42,6 +40,7 @@ property_land_use_type = {
     291: 'Residential Vacant Land',
 }
 
+
 def find_path(file: str) -> str:
     return join(dirname(realpath(__file__)), f"dataset/{file}")
 
@@ -66,8 +65,8 @@ def get_y(year: int) -> pd.DataFrame:
 
 def merge_x_y(x: pd.DataFrame, y: pd.DataFrame, with_duplicates: bool = False) -> pd.DataFrame:
     if with_duplicates == False:
-        y = y.sort_values("transactiondate").drop_duplicates("parcelid",keep = "last")
-    return pd.merge(y, x, on = "parcelid", how = "inner")
+        y = y.sort_values(Features.transaction_date.value).drop_duplicates(Features.parcel_id.value, keep = "last")
+    return pd.merge(y, x, on = Features.parcel_id.value, how = "inner")
 
 
 def read_unique(name: str, data_series: pd.DataFrame):
@@ -75,8 +74,8 @@ def read_unique(name: str, data_series: pd.DataFrame):
 
 
 def split_x_y(dataset: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    x = dataset.drop('logerror', axis=1)
-    y = dataset.logerror
+    x = dataset.drop(Features.log_error.value, axis=1)
+    y = dataset[Features.log_error.value]
 
     return x, y
 

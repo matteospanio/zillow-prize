@@ -1,7 +1,7 @@
-from msilib.schema import Error
+from typing import Tuple
 import pandas as pd
 import numpy as np
-from data import County
+from Zillow.types import County, Features as ft
 
 class Mean:
     '''
@@ -18,16 +18,22 @@ class Mean:
         self.prediction = y.mean()
         
     def predict(self, x: pd.DataFrame):
-        lista = [self.prediction for _ in range(len(x))]
-        return np.array(lista)
+        plist = [self.prediction for _ in range(len(x))]
+        return np.array(plist)
 
 
-def generate_predictions(features: pd.DataFrame, model):
-    for row in features.iterrows():
-        if row.regionidcounty == County.VENTURA:
-            pass
-        elif row.regionidcounty == County.ORANGE:
-            pass
-        elif row.regionidcounty == County.LOS_ANGELES:
-            pass
-        else: raise Exception('invalid county code')
+def generate_predictions(features: pd.DataFrame, ventura_model, orange_model, los_angeles_model, general_model) -> Tuple[list[float], list[int]]:
+    predictions = []
+    errors_idx = []
+    for index, row in features.iterrows():
+        if row[ft.county_id.value] == County.VENTURA.value:
+            predictions.append( ventura_model.predict(row) )
+        elif row[ft.county_id.value] == County.ORANGE.value:
+            predictions.append( orange_model.predict(row) )
+        elif row[ft.county_id.value] == County.LOS_ANGELES.value:
+            predictions.append( los_angeles_model.predict(row) )
+        else:
+            predictions.append( general_model.predict(row) )
+            errors_idx.append( index )
+    
+    return predictions, errors_idx

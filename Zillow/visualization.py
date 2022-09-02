@@ -28,6 +28,7 @@ map_code_property_land_use_type = {
     291: 25,
 }
 
+
 class ZillowMap(Basemap):
 
     def __init__(self, ax):
