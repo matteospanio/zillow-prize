@@ -1,6 +1,7 @@
+from msilib.schema import Error
 import pandas as pd
 import numpy as np
-
+from data import County
 
 class Mean:
     '''
@@ -19,3 +20,14 @@ class Mean:
     def predict(self, x: pd.DataFrame):
         lista = [self.prediction for _ in range(len(x))]
         return np.array(lista)
+
+
+def generate_predictions(features: pd.DataFrame, model):
+    for row in features.iterrows():
+        if row.regionidcounty == County.VENTURA:
+            pass
+        elif row.regionidcounty == County.ORANGE:
+            pass
+        elif row.regionidcounty == County.LOS_ANGELES:
+            pass
+        else: raise Exception('invalid county code')

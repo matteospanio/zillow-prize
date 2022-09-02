@@ -1,41 +1,46 @@
 from os.path import dirname, join, realpath
+from enum import Enum
 from typing import Tuple
 import pandas as pd
 
-droplist = [
-    #'airconditioningtypeid', #no orange
-    'architecturalstyletypeid',
-    'basementsqft',
-    'buildingclasstypeid',
-    'decktypeid',
-    #'buildingqualitytypeid', #solo los angeles
-    'calculatedbathnbr',
-    'finishedfloor1squarefeet',
-    'finishedsquarefeet6',
-    'finishedsquarefeet12',
-    'finishedsquarefeet13',
-    'finishedsquarefeet15',
-    'finishedsquarefeet50',
-    #'fireplacecnt',        #no los angeles
-    'fullbathcnt',
-    #'garagecarcnt',        #no los angeles
-    #'garagetotalsqft',     #no los angeles
-    #'hashottuborspa',      #no orange
-    'poolsizesum',
-    #'pooltypeid10',        #no orange
-    #'pooltypeid2',         #solo ventura
-    'storytypeid',
-    'threequarterbathnbr',
-    'typeconstructiontypeid',
-    'yardbuildingsqft17',
-    'yardbuildingsqft26',
-]
+county_dict = {
+    1286.: 'Ventura',
+    2061.: 'Orange',
+    3101.: 'Los Angeles'
+}
 
+class County(Enum):
+    VENTURA = 1286
+    ORANGE = 2061
+    LOS_ANGELES = 3101
 
-
-def get_droplist():
-    return droplist
-    
+property_land_use_type = {
+    31 : 'Commercial/Office/Residential mix',
+    46 : 'Multi-Story Store',
+    47 : 'Store/Office mix',
+    246: 'Duplex (2 Units)',
+    247: 'Triplex (3 Units)',
+    248: 'Quadruplex (4 Units)',
+    260: 'Residential General',
+    261: 'Single Family Residential',
+    262: 'Rural Residence',
+    263: 'Mobile Home',
+    264: 'Townhouse',
+    265: 'Cluster Home',
+    266: 'Condominium',
+    267: 'Cooperative',
+    268: 'Row House',
+    269: 'Planned Unit Development',
+    270: 'Residential Common Area',
+    271: 'Timeshare',
+    273: 'Bungalow',
+    274: 'Zero Lot Line',
+    275: 'Manufactured, Modular, Prefabricated Homes',
+    276: 'Patio Home',
+    279: 'Inferred Single Family Residential',
+    290: 'Vacant Land - General',
+    291: 'Residential Vacant Land',
+}
 
 def find_path(file: str) -> str:
     return join(dirname(realpath(__file__)), f"dataset/{file}")
