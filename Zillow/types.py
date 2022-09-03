@@ -73,4 +73,8 @@ class Features(Enum):
 class MoreFeatures(Enum):
     county_name = 'county_name'
     nan_cnt = 'nan_cnt'
+    land_use_label = 'land_use_label'
+    air_cooler_label = 'air_cooler_label'
     transaction_month = 'transaction_month'
+    transaction_month_day = 'transaction_month_day'
+    transaction_week_day = 'transaction_week_day'

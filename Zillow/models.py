@@ -2,6 +2,7 @@ from typing import Tuple
 import pandas as pd
 import numpy as np
 from Zillow.types import County, Features as ft
+from Zillow.metrics import measure_model
 
 class Mean:
     '''
@@ -15,14 +16,26 @@ class Mean:
         self.prediction = 0.
     
     def fit(self, x: pd.DataFrame, y: pd.DataFrame):
-        self.prediction = y.mean()
+        self.prediction = np.mean(y.to_numpy())
         
-    def predict(self, x: pd.DataFrame):
-        plist = [self.prediction for _ in range(len(x))]
-        return np.array(plist)
+    def predict(self, x: pd.DataFrame, input_single_row: bool = False) -> np.ndarray:
+        if input_single_row:
+            return self.prediction
+        return np.full(x.shape[0], self.prediction)
+
+    def get_params(self, deep: bool = True):
+        return {}
+
+    def set_params(self, **parameters):
+        for parameter, value in parameters.items():
+            setattr(self, parameter, value)
+        return self
+
+    def score(self, x: pd.DataFrame, y: pd.DataFrame) -> Tuple[float, float]:
+        return measure_model(y, self.predict(x))[0]
 
 
-def generate_predictions(features: pd.DataFrame, ventura_model, orange_model, los_angeles_model, general_model) -> Tuple[list[float], list[int]]:
+def generate_predictions(features: pd.DataFrame, ventura_model, orange_model, los_angeles_model, general_model, month = None) -> Tuple[list[float], list[int]]:
     predictions = []
     errors_idx = []
     for index, row in features.iterrows():
