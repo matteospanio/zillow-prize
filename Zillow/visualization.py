@@ -1,32 +1,18 @@
+from typing import Tuple
 from mpl_toolkits.basemap import Basemap
+import pandas as pd
 
-map_code_property_land_use_type = {
-    31 : 1,
-    46 : 2,
-    47 : 3,
-    246: 4,
-    247: 5,
-    248: 6,
-    260: 7,
-    261: 8,
-    262: 9,
-    263: 10,
-    264: 11,
-    265: 12,
-    266: 13,
-    267: 14,
-    268: 15,
-    269: 16,
-    270: 17,
-    271: 18,
-    273: 19,
-    274: 20,
-    275: 21,
-    276: 22,
-    279: 23,
-    290: 24,
-    291: 25,
-}
+from Zillow.data import property_land_use_type
+from Zillow.types import MoreFeatures as mft
+
+def create_labels_for_non_zero_land_use_types(df: pd.DataFrame) -> Tuple[dict, dict]:
+    labels = {}
+    color_map = {}
+    for i, (key, label) in enumerate(property_land_use_type.items()):
+        if len(df[df[mft.land_use_label.value] == label]) > 0:
+            labels[key] = label
+            color_map[label] = i
+    return labels, color_map
 
 
 class ZillowMap(Basemap):
