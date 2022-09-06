@@ -97,6 +97,31 @@ _categorical_features = {
     ]
 }
 
+_cat_la = {
+    'to transform': [
+        mft.transaction_month.value,
+        mft.transaction_week_day.value,
+        mft.land_use_label.value,
+        mft.county_name.value,
+        mft.heating_label.value
+    ],
+    'to drop': [
+        mft.transaction_month.value,
+        mft.transaction_week_day.value,
+        mft.land_use_label.value,
+        mft.county_name.value,
+        mft.heating_label.value,
+        'x0_April',
+        'x0_August',
+        'x0_January',
+        'x0_July',
+        'x0_June',
+        'x0_March',
+        'x0_May',
+        'x0_September',
+    ]
+}
+
 _nan_to_zero = {
     'common': [
         ft.has_unpaid_tax.value,
@@ -243,15 +268,25 @@ class ZillowTransformer():
 class ZillowEncoder():
 
     _encoder: OneHotEncoder
+    _county: County
 
-    def __init__(self) -> None:
+    def __init__(self, county: County = None) -> None:
         self._encoder = OneHotEncoder(sparse=False, handle_unknown='ignore')
+        self._county = county
 
     def fit(self, df: pd.DataFrame) -> None:
-        self._encoder.fit(df[_categorical_features['to transform']])
+        if self._county == County.LOS_ANGELES:
+            self._encoder.fit(df[_cat_la['to transform']])
+        else:
+            self._encoder.fit(df[_categorical_features['to transform']])
 
     def transform(self, df: pd.DataFrame) -> pd.DataFrame:
-        encoded = self._encoder.transform(df[_categorical_features['to transform']])
-        df[ self._encoder.get_feature_names() ] = encoded
-        df.drop(columns=_categorical_features['to drop'], axis=1, inplace=True)
+        if self._county == County.LOS_ANGELES:
+            encoded = self._encoder.transform(df[_cat_la['to transform']])
+            df[ self._encoder.get_feature_names() ] = encoded
+            df.drop(columns=_cat_la['to drop'], axis=1, inplace=True)
+        else:
+            encoded = self._encoder.transform(df[_categorical_features['to transform']])
+            df[ self._encoder.get_feature_names() ] = encoded
+            df.drop(columns=_categorical_features['to drop'], axis=1, inplace=True)
         return df.astype(float)

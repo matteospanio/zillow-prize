@@ -14,6 +14,7 @@ county_dict = {
     County.LOS_ANGELES.value: 'Los Angeles'
 }
 
+
 heating_system_dict = {
     1: 'Baseboard',
     2: 'Central',
@@ -247,8 +248,8 @@ def get_preprocessed_data(county: County = None):
     train = preprocessor.transform(train)
     validation = preprocessor.transform(validation)
     test = preprocessor.transform(test)
-
-    encoder = ZillowEncoder()
+    
+    encoder = ZillowEncoder(county)
     encoder.fit(train)
 
     train = encoder.transform(train)
