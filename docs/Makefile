@@ -1,0 +1,5 @@
+build:
+	pdflatex main.tex
+
+clean:
+	rm -f *.aux *.log *.out *.toc *.fls *.fdb_latexmk *.bcf *.blg *.bbl *.maf *.mtc* *.xml *.synctex.gz

@@ -1,0 +1,82 @@
+\documentclass[12pt, twoside]{article}
+\usepackage{geometry}
+\usepackage{caption}
+\usepackage{subcaption}
+\geometry{a4paper}
+
+\usepackage[mono=false]{libertine} 
+
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{etoc}
+
+\usepackage[toc,title,titletoc,header]{appendix}
+\usepackage{minitoc}
+\usepackage{cancel}
+\usepackage{imakeidx} % before hyperref
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\graphicspath{ {img/} }
+\usepackage{verbatim}
+\usepackage{setspace}
+\usepackage{epigraph}
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{a4}
+\usepackage{csquotes}
+\usepackage{url}
+\usepackage{lettrine}
+\usepackage{graphicx}
+\usepackage{lscape}
+\usepackage{epsfig}
+\usepackage{epstopdf}
+\usepackage{eurosym}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{lscape}
+
+\newenvironment{footcitedquote}[1][]
+  {% \begin{footcitedquote}[.]
+   \let\mkcitation\footnote% Citations will be footnotes
+   \def\optarg{#1}% Capture optional argument
+   % Set up start of displayquote environment
+   \edef\envstart{\noexpand\begin{displayquote}\if$\optarg$\else[\noexpand\optarg]\fi}%
+   \envstart}
+  {\end{displayquote}}% \end{footcitedquote}
+
+\title{Zillow’s Home Value Prediction}
+\author{Matteo Spanio}
+\date{Settembre 2022}
+
+
+
+\begin{document}
+    \input{cover.tex}
+
+    
+    \onehalfspacing
+
+    %\tableofcontents
+
+    \section{The dataset}
+    
+    Di fronte al dataset fornito da Zillow la prima problematica da affrontare è scegliere come aggregare i dati: i file contenenti le transazioni con $logerror$ e data infatti trattano più volte la vendita della stessa proprietà. Unire i dati sulla chiave $parcelid$ creerebbe diverse righe duplicate tranne che per pochi valori, mentre includere questi duplicati permetterebbe di monitorare, a parità di condizioni della proprietà, cambiamenti di $logerror$ nel tempo, un dato che si intuisce essere importante dal format del file .csv per la consegna delle predizioni.
+
+    \section{Features}
+    ciao
+
+    \section{Model selection}
+    ciao
+
+    \section{About outliers}
+
+    \section{Conclusions}
+    ciao
+
+\end{document}
