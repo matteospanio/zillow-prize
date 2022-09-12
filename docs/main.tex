@@ -23,7 +23,7 @@
 \usepackage{verbatim}
 \usepackage{setspace}
 \usepackage{epigraph}
-\usepackage[italian]{babel}
+\usepackage[english]{babel}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{a4}
@@ -55,28 +55,21 @@
 \date{Settembre 2022}
 
 
-
 \begin{document}
-    \input{cover.tex}
+  \input{cover.tex}
 
+  \onehalfspacing
+
+  \section{The dataset}
+     
+  \input{sections/01.tex}
+
+  \section{Model selection}
+
+  \input{sections/02.tex}
+
+  \section{Conclusions}\label{conclusions}
     
-    \onehalfspacing
-
-    %\tableofcontents
-
-    \section{The dataset}
-    
-    Di fronte al dataset fornito da Zillow la prima problematica da affrontare è scegliere come aggregare i dati: i file contenenti le transazioni con $logerror$ e data infatti trattano più volte la vendita della stessa proprietà. Unire i dati sulla chiave $parcelid$ creerebbe diverse righe duplicate tranne che per pochi valori, mentre includere questi duplicati permetterebbe di monitorare, a parità di condizioni della proprietà, cambiamenti di $logerror$ nel tempo, un dato che si intuisce essere importante dal format del file .csv per la consegna delle predizioni.
-
-    \section{Features}
-    ciao
-
-    \section{Model selection}
-    ciao
-
-    \section{About outliers}
-
-    \section{Conclusions}
-    ciao
+  \input{sections/03.tex}
 
 \end{document}
