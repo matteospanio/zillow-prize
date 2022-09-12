@@ -1,18 +1,10 @@
 from os.path import dirname, join, realpath
-import re
 
 from typing import Tuple
 import pandas as pd
 from Zillow.transform import ZillowEncoder, ZillowTransformer
 
 from Zillow.types import County, Features
-
-
-county_dict = {
-    County.VENTURA.value: 'Ventura',
-    County.ORANGE.value: 'Orange',
-    County.LOS_ANGELES.value: 'Los Angeles'
-}
 
 
 heating_system_dict = {
@@ -134,14 +126,14 @@ def get_dataset(year: int = None, county: County = None) -> pd.DataFrame:
     data_2016 = pd.read_csv(_find_dataset("2016_data_exploration.csv"))
     data_2017 = pd.read_csv(_find_dataset("2017_data_exploration.csv"))
 
-    ventura_2016 = data_2016[data_2016[Features.county_id.value] == county_dict[County.VENTURA.value]]
-    ventura_2017 = data_2017[data_2017[Features.county_id.value] == county_dict[County.VENTURA.value]]
+    ventura_2016 = data_2016[data_2016[Features.county_id.value] == County.VENTURA.value]
+    ventura_2017 = data_2017[data_2017[Features.county_id.value] == County.VENTURA.value]
 
-    orange_2016 = data_2016[data_2016[Features.county_id.value] == county_dict[County.ORANGE.value]]
-    orange_2017 = data_2017[data_2017[Features.county_id.value] == county_dict[County.ORANGE.value]]
+    orange_2016 = data_2016[data_2016[Features.county_id.value] == County.ORANGE.value]
+    orange_2017 = data_2017[data_2017[Features.county_id.value] == County.ORANGE.value]
 
-    los_angeles_2016 = data_2016[data_2016[Features.county_id.value] == county_dict[County.LOS_ANGELES.value]]
-    los_angeles_2017 = data_2017[data_2017[Features.county_id.value] == county_dict[County.LOS_ANGELES.value]]
+    los_angeles_2016 = data_2016[data_2016[Features.county_id.value] == County.LOS_ANGELES.value]
+    los_angeles_2017 = data_2017[data_2017[Features.county_id.value] == County.LOS_ANGELES.value]
 
     if year == 2016:
         if county == County.VENTURA:
