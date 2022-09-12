@@ -2,6 +2,7 @@ from typing import Tuple
 import pandas as pd
 import numpy as np
 from Zillow.types import County, Features as ft
+from Zillow.transform import ZillowEncoder, ZillowTransformer
 from Zillow.metrics import measure_model
 
 class BaseModel:
@@ -42,19 +43,48 @@ class BaseModel:
         return measure_model(y, self.predict(x))[0]
 
 
-def generate_predictions(features: pd.DataFrame, ventura_model, orange_model, los_angeles_model, general_model, month = None) -> Tuple[list[float], list[int]]:
-    predictions = []
-    errors_idx = []
-    for index, row in features.iterrows():
-        if row[ft.county_id.value] == County.VENTURA.value:
-            predictions.append( ventura_model.predict(row) )
-        elif row[ft.county_id.value] == County.ORANGE.value:
-            predictions.append( orange_model.predict(row) )
-        elif row[ft.county_id.value] == County.LOS_ANGELES.value:
-            predictions.append( los_angeles_model.predict(row) )
+def make_predictions(
+    df: pd.DataFrame,
+    orange_model,
+    ventura_model,
+    la_model, model_all,
+    month, 
+    o_transformer,
+    o_encoder,
+    v_transformer,
+    v_encoder,
+    la_transformer,
+    la_encoder,
+    all_transformer,
+    all_encoder,
+    verbose: bool = False):
+    df[ft.transaction_date.value] = month
+    results = np.array([])
+
+    for i, row in df.iterrows():
+        if verbose:
+            print(f'Predicting {i+1}/{len(df)}')
+            print(f'parcelid: {row[ft.parcelid.value]}')
+
+        if row[ft.county_id] == County.ORANGE.value:
+            row_trans = o_transformer.transform(row)
+            row_enc = o_encoder.transform(row_trans)
+            np.append(results, orange_model.predict(row_enc))
+
+        elif row[ft.county_id] == County.VENTURA.value:
+            row_trans = v_transformer.transform(row)
+            row_enc = v_encoder.transform(row_trans)
+            np.append(results, ventura_model.predict(row_enc))
+
+        elif row[ft.county_id] == County.LOS_ANGELES.value:
+            row_trans = la_transformer.transform(row)
+            row_enc = la_encoder.transform(row_trans)
+            np.append(results, la_model.predict(row_enc))
+
         else:
-            predictions.append( general_model.predict(row) )
-            errors_idx.append( index )
-    
-    return predictions, errors_idx
+            row_trans = all_transformer.transform(row)
+            row_enc = all_encoder.transform(row_trans)
+            np.append(results, model_all.predict(row_enc))
+        
+    return results
 
