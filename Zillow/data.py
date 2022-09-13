@@ -7,6 +7,13 @@ from Zillow.transform import ZillowEncoder, ZillowTransformer
 from Zillow.types import County, Features
 
 
+county_dict = {
+    County.VENTURA.value: 'Ventura',
+    County.ORANGE.value: 'Orange',
+    County.LOS_ANGELES.value: 'Los Angeles'
+}
+
+
 heating_system_dict = {
     1: 'Baseboard',
     2: 'Central',
