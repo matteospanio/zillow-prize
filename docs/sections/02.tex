@@ -1,6 +1,7 @@
-\subsection{Model measure}
+The measure I took into account to evaluate the model is the mean absolute error, since it was the measure used by Zillow to evaluate the models submitted to the competition. I think that the mean squared error would have been better, it penalizes more big errors while it reduces the weigth of small errors, but I didn't want to change the metric used by Zillow, so I decided to stick with the mean absolute error.
 
-    
-Per le predizioni sono stati presi in considerazione più modelli di regressione, la predizione di base su cui misurare le altre è 
+As a base model I used the mean, since the $\log error$ is normally distributed its mean is the value we can expect with most probability. To create a base also for county splitted models I used the mean of the $\log error$ for each county. The mean absolute error of the base model is $0.069$, while the mean absolute error of the county splitted base model is $0.062$ for Los Angeles, Orange and Ventura. There is evidence that the county matters, it could be that a distance based model can do well for this task, so I made an attempt with a KNN model, but it didn't perform well, with a $5$-folded grid search cross validation the model was the model estimations improves as $k$ increases, it means that the model is trying to converge to the mean.
 
-There is evidence that there are many differences between counties, but the models didn't catch it.
+Successively I kept things as simple as possible, I didn't expect to get better results, but wanted to try the linear regressor and a decision tree, those methods aren't expected to explain main part of the errors' variance, but if they get a little better result than the base model it would be a good sign and maybe we can infer something about the data.
+
+\subsection{Predictive quality of the fetures}

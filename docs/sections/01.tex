@@ -1,30 +1,38 @@
 The first problem to consider was how to join the data, the dataset is a collection of houses features splitted by year of assessment. Should I make an analysis for each year or merge the datasets togheter? How to handle duplicated rows?
     
-There could be different trends in different years and create a single model could be a bad idea, anyway at a first sight the dataset is quite homogeneous, so I decided to merge all togheter. In second instance I saw that there were some duplicated rows, actually few hundreds of houses have been selled twice or trice in a year: keep them all could create redundancy and alter the columns statistics, nevertheless we could find some interesting information about the variations (or non-variations) of error over time, so I decided to keep them all.
+There could be different trends in different years and create a single model could be a bad idea, anyway at a first sight the dataset is quite homogeneous, so I decided to merge all togheter. In second instance I saw that there were some duplicated rows, actually few hundreds of houses have been selled twice or trice in a year: keep them all could create redundancy and alter the columns statistics, nevertheless we could find some interesting information about the variations (or non-variations) of error over time, so I decided to keep them all\footnote{
+    Also the Zillow competition expects to predict the sell value of a property in different months and years, so I assume it is important to keep the information about the time of the assessment.
+    }.
 
 \subsection{Features}
-    
-There are many features! Are all of them useful? The real answer is I don't know. A limited knowledge of the domain made me struggle with some data, even after reading the brief description given by Zillow I was not able to understand what some features were. It's hard to believe how different countries can have such different kind of houses and measures to describe them. So I firstly decided to have a look at wikipedia to better understand few features, after spending some time studying I figured out that some column were in reality duplicated data: a lot of administrative subdivision were redundant and probably not necessary, since we already have a fine grained location data given by coordinates probably a city id or the neighborhood id were not necessary, so I dropped those columns and other administrative categories.
 
-Hence we can see that many rows are missing some values. Diving deep in the problem we can inference that many columns probably\footnote{Here I used the word ``probably'' because we don't really know if missing values were zero or there were some other kind of issue so that the real value was not taken, anyway, based on statistics and logic, it is likely that more houses paid the taxes or didn't have a spa} did not input data when the value was zero (it is not a all comprehensive case, some features were relevant only for certain counties, see more at \ref{counties_importance}). For example, if a house does not have a spa, the value of the column ``spa'' is missing, but it is not zero. For categorical data I decided to fill the missing values with zero, since it is the most likely value, while fill continuous data was more thought. Some columns are missing a lot of fields where others are just missing few hundreds or thousands of rows. I decided to fill the least unpopulated columns with their mean
-\footnote{Actually not the exact mean, I used instead the following formula:
+There are many features! Are all of them useful? The real answer is I don't know. A limited knowledge of the domain made me struggle with some data, even after reading the brief description given by Zillow I was not able to understand what some features were. It's hard to believe how different countries can have such different kind of houses and measures to describe them. So I firstly decided to have a look at wikipedia to better understand few features, after spending some time studying I figured out that some column were in reality duplicated data: a lot of administrative subdivision were redundant and probably not necessary, since we already have a fine grained location data given by coordinates probably a city id or the neighborhood id were not necessary, so I dropped those columns and other administrative categories. Also some other features were duplicated since Zillow provided the raw data they get from assessors and ones calculated by themselves\footnote{see in the comment section at \url{https://www.kaggle.com/c/zillow-prize-1/discussion/33899} for more informations.}.
+
+Hence we can see that many rows are missing some values. Diving deep in the problem we can infer that many columns probably\footnote{Here I used the word ``probably'' because we don't really know if missing values were zero or there were some other kind of issue so that the real value was not taken, anyway, based on statistics and logic, it is likely that more houses paid the taxes or didn't have a spa} did not input data when the value was zero (it is not a all comprehensive case, some features were relevant only for certain counties, see more at \ref{counties_importance}). For example, if a house does not have a spa, the value of the column ``spa'' is missing, but it is not zero. For categorical data I decided to fill the missing values with zero, since it is the most likely value, while fill continuous data was more thought. Some columns are missing a lot of fields where others are just missing few hundreds or thousands of rows. I decided to fill the least unpopulated columns with their mean, actually not the exact mean, I used instead the following formula:
 $$
     x_{\text{NaN}} = \left\lfloor \frac{1}{n} \sum_{i=1}^{n} x_i \right\rfloor
 $$
-where $n = |\text{column}|$ and $x_i \neq \text{NaN}$. Since I replaced every column with the same function I included the floor function because some features are integers (e. g. year) and other data are not really messed up if I drop some decimals after floating point (e. g. $853$ square feets is almost the same information as $853.37$ square feets, and the same is for values in dollars).},
-add a column for each feature to mark if the data has been altered --- to be able to recognise if a specific feature was missing could be significant since we are trying to predict the prediction error of \textit{Zestimate}. %TODO expand
+where $n = |\text{column}|$ and $x_i \neq \text{NaN}$. Since I replaced every column with the same function I included the floor function because some features are integers (e. g. year) and other data are not really messed up if I drop some decimals after floating point (e. g. $853$ square feets is almost the same information as $853.37$ square feets, and the same is for values in dollars).
+For each touched feature I added a column to mark if the data has been altered --- to be able to recognise if a specific feature was missing could be significant since we are trying to predict the prediction error of \textit{Zestimate}. %TODO expand
 
 \subsection{Are counties relevant?}\label{counties_importance}
 
-Plotting the data divided by county it came out that some of the most unpopulated features where taken only for certain counties, and here comes a new problem: how to handle those missing values? I don't like too much remove columns that can be useful, especially if they are complete for some categories of data. The solution I embraced was to split data into specialized analysis: I filtered the data by county and I created a model for each county.
+Plotting the data divided by county it came out that some of the most unpopulated features where taken only for certain counties, and here comes a new problem: how to handle those missing values? I didn't like too much remove columns that can be useful, especially if they were complete for some categories of data. The solution I embraced was to split data into specialized analysis: I filtered the data by county and created a model for each county.
 This solution has some drawbacks: the models are not comparable and the dataset is not homogeneous, anyway we can take advantage of more features and we can see also that some trends are going on, the county of Los Angeles has more records, but also the greatest variance of data (more about data inference at \ref{conclusions}).
-
     
-; the models are not comparable because the features are not the same, but the error is comparable since it is calculated on the same dataset. The dataset is not homogeneous because some counties have more data than others, but this is not a problem since we are not trying to predict the error of the model, but the error of \textit{Zestimate}.
-
+To be fair a good model should be able to detect differences between counties if there are any, but I didn't came to a solution that could take into account different features in the same model. I ended up creating four models, one for each county and one for the whole dataset.
 
 \subsection{Response variable}
 
-What could happen if I transform the response variable?
-    
-\subsection{About outliers}
+Once I was done filling gaps in the dataset and ready to start making predictions I asked myself: is the $\log{error}$ a good quantity to make predictions on? What could happen if I transform the response variable?
+
+By definition the $\log{error}$ is the difference between the predicted value and the real value, for the properties of logarithm it means that is the logarithm of the relationship between the two values:
+$$
+\begin{aligned}
+    &\log error = \log(Zestimate) - \log(SalePrice)\\
+    = \log{\left(\frac{Zestimate}{SalePrice}\right)} &\sim
+    \mathcal{N}\left(\frac{\sum_{i=1}^n x_i}{n}, \frac{\sum_{i=1}^n x_i^2 - \bar {x}} {n-1}\right)\quad\text{where }x = \log error 
+\end{aligned}
+$$
+in this case we take into account the logarithm of a ratio because it better approximates to a normal distribution and it is homoscedastic.
+
