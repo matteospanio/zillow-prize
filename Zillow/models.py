@@ -1,9 +1,14 @@
 from typing import Tuple
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.model_selection import cross_val_score
+from sklearn.feature_selection import RFE
+
 from Zillow.types import County, Features as ft
-from Zillow.transform import ZillowEncoder, ZillowTransformer
-from Zillow.metrics import measure_model
 
 class BaseModel:
     '''
@@ -38,17 +43,50 @@ class BaseModel:
             setattr(self, parameter, value)
         return self
 
-    def score(self, x: pd.DataFrame, y: pd.DataFrame) -> Tuple[float, float]:
-        '''returns mae'''
-        return measure_model(y, self.predict(x))[0]
+
+def select_linear_regression_features(x: pd.DataFrame, y: pd.DataFrame, model: LinearRegression, scale: bool = False, plot: bool = False, cv: int = 5):
+    '''
+    Evaluate best parameters for linear regression model.
+    '''
+    x_scaled = x
+    scaler = MinMaxScaler()
+
+    if scale:
+        x_scaled = scaler.fit_transform(x)
+        x_scaled = pd.DataFrame(x_scaled, columns=x.columns)
+    
+    rfe = RFE(estimator=model, n_features_to_select=1)
+
+    rfe.fit(x_scaled, y)
+
+    best_features = np.array(x.columns.to_list())[ np.argsort(rfe.ranking_)[::-1] ]
+
+    mae = []
+
+    for f in range(1,len(best_features)+1):
+        scores = cross_val_score(model,
+                                x_scaled.loc[:,best_features[:f]], y, 
+                                cv=cv, scoring='neg_mean_absolute_error')
+        mae += [-scores.mean()]
+
+    if plot:
+        fig, ax = plt.subplots(figsize=(9,4))
+        ax.plot(range(1,len(best_features)+1), mae, 'o-', label="MAE")
+        ax.set_title("MAE on varying features")
+        ax.set_xlabel("Number of Best features used")
+        ax.grid()
+        plt.show()
+
+    return best_features
 
 
 def make_predictions(
     df: pd.DataFrame,
     orange_model,
     ventura_model,
-    la_model, model_all,
-    month, 
+    la_model,
+    model_all,
+    month: str, 
     o_transformer,
     o_encoder,
     v_transformer,
