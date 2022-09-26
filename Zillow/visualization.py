@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import numbers
+import seaborn as sns
 
 from Zillow.data import property_land_use_type
 from Zillow.types import MoreFeatures as mft
@@ -31,6 +32,33 @@ class ZillowMap(Basemap):
         self.fillcontinents(color='#f6fbd7',lake_color='#d8eaf3')
         self.drawcoastlines(color='gray')
         self.drawcounties(color='darkgrey', linewidth=.3)
+
+
+def plot_heatmap(df):
+    fig, ax = plt.subplots(figsize=(30, 30))
+
+    sns.heatmap(data=df.corr(),
+                mask=np.triu(np.ones_like(df.corr(), dtype=bool)),
+                vmax=1.0,
+                vmin=-1.0,
+                center=0,
+                square=True,
+                annot=True,
+                fmt=".2f",
+                annot_kws={"size": 9},
+                linewidths=.5,
+                ax=ax)
+
+
+def plot_random_forest_feature_importance(df, rf):
+    feature_names = df.columns.to_list()
+
+    fig, ax = plt.subplots(figsize=(80,5))
+    ax.bar(range(0,df.shape[1]), rf.feature_importances_)
+    ax.set_title("Feature Importances")
+    ax.set_xticks(range(df.shape[1]))
+    ax.set_xticklabels(feature_names)
+    ax.grid()
 
 
 def plot_grid_search_validation_curve(grid, param_to_vary,
